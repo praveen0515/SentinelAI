@@ -114,15 +114,15 @@ def make_timeline(n):
     rows = []
     base = datetime.utcnow() - timedelta(hours=n)
     step = n if n <= 24 else n // 24
-    ticks = n // step
+    ticks = max(n // step, 1)
     for i in range(ticks):
         t = base + timedelta(hours=i * step)
         rows.append({
             "time":     t.strftime("%H:%M" if n <= 24 else "%b %d"),
-            "Critical": random.randint(2, 8),
-            "High":     random.randint(3, 12),
-            "Medium":   random.randint(2, 9),
-            "Low":      random.randint(1, 5),
+            "CRITICAL": random.randint(2, 8),
+            "HIGH":     random.randint(3, 12),
+            "MEDIUM":   random.randint(2, 9),
+            "LOW":      random.randint(1, 5),
         })
     return pd.DataFrame(rows)
 
@@ -280,10 +280,7 @@ with tab3:
         st.success("No alerts matching the selected severity filter.")
     else:
         st.dataframe(
-            df_alerts.style.applymap(
-                lambda v: f"color: {SEV_COLORS.get(v, '#fff')}" if v in SEV_COLORS else "",
-                subset=["Severity"],
-            ),
+            df_alerts,
             use_container_width=True,
             hide_index=True,
         )
